@@ -1,6 +1,20 @@
 import numpy as np
 import open3d as o3d
 
+def ReadPointCloud(fname):
+    """ read point from ply
+
+    Args:
+        fname (str): path to ply file
+
+    Returns:
+        [ndarray]: N x 3 point clouds
+    """
+
+    pcd = o3d.io.read_point_cloud(fname)
+
+    return pcd
+
 def ReadPlyPoint(fname):
     """ read point from ply
 
@@ -113,9 +127,17 @@ def PlaneRegression(points, threshold=0.01, init_n=3, iter=1000):
 
     return w, index
 
+def DrawPointCloud(pcd):
+    o3d.visualization.draw_geometries([pcd])
 
 def DrawResult(points, colors):
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(points)
     pcd.colors = o3d.utility.Vector3dVector(colors)
     o3d.visualization.draw_geometries([pcd])
+
+def DrawNormals(pcd, voxel_size=0.05):
+    downpcd = pcd.voxel_down_sample(voxel_size=voxel_size)
+    downpcd.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.1, max_nn=30))
+    o3d.visualization.draw_geometries([downpcd],
+    point_show_normal=True)
